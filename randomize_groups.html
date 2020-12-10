@@ -16,6 +16,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            position: relative;
         }
         .team-members{
             padding: 20px;
@@ -39,7 +40,7 @@
         }
 
         .member{
-            padding:10px;
+            padding:12px;
             box-shadow: 1px 2px 5px rgba(0,0,0,0.3);
             border-radius: 15px;
             color: white;
@@ -47,6 +48,7 @@
             animation-duration: 1.5s;
             font-family: 'Ranchers', cursive;
             letter-spacing: 1px;
+            margin: 5px
         }
 
 
@@ -55,7 +57,11 @@
         }
         .team-groups{
             width: 100%;
-            background-color: blue
+            display: flex;
+            flex-direction: row;
+            position: absolute;
+            bottom: 10px;
+            justify-content: center;
         }
         html{
             height: -webkit-fill-available;
@@ -81,6 +87,30 @@
             padding: 10px;
             cursor: pointer
         }
+        .team{
+            background-color:red;
+            height: 700px;
+            width: 20%;
+            font-size: 20px;
+            text-decoration: underline;
+            padding: 10px;
+            border-bottom: 1px solid white;
+            border-right: 1px solid white;
+        }
+        
+        .team-creation-container{
+            display: flex;
+            flex-direction: column;
+            position: unset !important;
+        }
+
+        .group-header{
+            width: 100%;
+            text-align: center;
+            border-bottom: 1px solid white;
+            text-decoration: underline;
+            margin: 0
+        }
     </style>
 </head>
 <body>
@@ -89,14 +119,16 @@
             <h1>Welcome to the Team Randomizer App</h1>
             <button class="start">Start</button>
         </div>
-        <div class="team-members-container">
-            <h1>Team 2 Members</h1>
-            <div class="team-members">
+        <!-- <div class="team-creation-container"> -->
+            <div class="team-members-container">
+                <h1>Team 2 Members</h1>
+                <div class="team-members">
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="team-groups">
-
+            <div class="team-groups">
+    
+            </div>
+        <!-- </div> -->
     </div>
 </body>
     <script>
@@ -107,10 +139,18 @@
             text = "Welcome to the team randomizer app. Today we'll be randomizing teams for project 1. Lets see the memebers"
             var speech = new SpeechSynthesisUtterance(text);
             window.speechSynthesis.speak(speech);
+            const classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
+            let count = 1;
+            for (let i=0; i < classMembers.length; i += 3) {
+                const column = $(`<div class="team team${count}"></div>`)
+                const teamHeader = $(`<h1 class="group-header">Team ${count}<h1>`)
+                column.append(teamHeader)
+                $('.team-groups').append(column)
+                count++
+            }
             $('.container').css('align-items', 'start')
             $('.team-members-container').css('display', 'block')
             speech.onend = function(){
-                const classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
                 classMembers.forEach((member,index) => {
                     let newP = $(`<p class="member">${member}</p>`)
                     if(index ===  classMembers.length - 1){
