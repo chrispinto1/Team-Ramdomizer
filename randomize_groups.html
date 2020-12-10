@@ -24,12 +24,32 @@
             flex-wrap: wrap;
             justify-content: space-evenly;
         }
+
+        .team-members-container h1{
+            color: white;
+            font-family: 'Ranchers', cursive;
+            letter-spacing: 3px;
+        }
+
+        @keyframes displayMembers {
+            0%   {opacity: 0%;}
+            25%  {opacity: 25%;}
+            50%  {opacity: 50%;}
+            100% {opacity: 100%;}
+        }
+
         .member{
             padding:10px;
             box-shadow: 1px 2px 5px rgba(0,0,0,0.3);
             border-radius: 15px;
             color: white;
+            animation-name: displayMembers;
+            animation-duration: 1.5s;
+            font-family: 'Ranchers', cursive;
+            letter-spacing: 1px;
         }
+
+
         .team-members-container{
             display: none
         }
@@ -87,12 +107,17 @@
             text = "Welcome to the team randomizer app. Today we'll be randomizing teams for project 1. Lets see the memebers"
             var speech = new SpeechSynthesisUtterance(text);
             window.speechSynthesis.speak(speech);
+            $('.container').css('align-items', 'start')
             $('.team-members-container').css('display', 'block')
             speech.onend = function(){
                 const classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
-                classMembers.forEach(member => {
+                classMembers.forEach((member,index) => {
                     let newP = $(`<p class="member">${member}</p>`)
-                    var to_speak = new SpeechSynthesisUtterance(newP.text());
+                    if(index ===  classMembers.length - 1){
+                        var to_speak = new SpeechSynthesisUtterance("and " + newP.text());
+                    }else{
+                        var to_speak = new SpeechSynthesisUtterance(newP.text());
+                    }
                     to_speak.onstart = function(){
                         $('.team-members').append(newP)
                     }
