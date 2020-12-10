@@ -162,17 +162,88 @@
         }
 
         const selectMember = (randomIndex) => {
-            console.log( document.querySelectorAll('.member')[randomIndex])
-            let randomMember = $($('.member')[randomIndex])
-            randomMember.css('background-color' , 'white')
-            randomMember.css('color' , 'black')
-            setTimeout(function(){
-                randomMember.fadeOut(500)
-            },500)
-            console.log('finished interval')
-            console.log(classMembers)
-            console.log(randomIndex)
+            console.log('randomIndex', randomIndex)
+            let randomMember = $('.member')[randomIndex]
+            console.log(randomMember)
+            randomMember.style.backgroundColor = 'white'
+            randomMember.style.color = 'black'
+            let randomGroupNumber = Math.floor(Math.random() * 3) //Make this number 4 dynamic based off number of group members
+            let allEmpty = true
+            for(let i= 0; i < $('.team').length; i++){
+
+            }
+            if(allEmpty){
+                let randomGroupDiv = $($('.team')[randomGroupNumber])
+                let clonedMember = randomMember.cloneNode()
+                randomGroupDiv.append((clonedMember))
+                const clonedMemberPosition = clonedMember.getBoundingClientRect()
+                console.log(clonedMemberPosition)
+
+                let currentPosition = {x: randomMember.getBoundingClientRect().x, y: randomMember.getBoundingClientRect().y}
+                let endPosition = {x: clonedMemberPosition.x - clonedMemberPosition.width +  49, y: clonedMemberPosition.y - 12}
+                const moveMemeber = setInterval(function(){
+                    if(currentPosition.x != endPosition.x || currentPosition.y != endPosition.y){
+                        //handle x here
+                        if(currentPosition.x != endPosition.x){
+                            //keep moving on the x axis
+                            //check if the x position is less than 10
+                            if(Math.abs(currentPosition.x - endPosition.x) < 1){
+                                currentPosition.x = endPosition.x
+                                $(randomMember).css('left', `${currentPosition.x}px`)
+                            }else{
+                                if(currentPosition.x > endPosition.x){
+                                    //move to the left
+                                    $(randomMember).css('left', `${currentPosition.x - 1}px`)
+                                    currentPosition.x -= 1
+                                }else{
+                                    //move to the right
+                                    $(randomMember).css('left', `${currentPosition.x + 1}px`)
+                                    currentPosition.x += 1
+                                }
+                            }
+                        }
+                        if(currentPosition.y != endPosition.y){
+                            if(Math.abs(currentPosition.y - endPosition.y) < 1){
+                                currentPosition.y = endPosition.y
+                                $(randomMember).css('top', `${currentPosition.y}px`)
+                            }else{
+                                if(currentPosition.y > endPosition.y){
+                                    //move up
+                                    $(randomMember).css('top', `${currentPosition.y - 1}px`)
+                                    currentPosition.y += 1
+                                }else{
+                                    //move down
+                                    $(randomMember).css('top', `${currentPosition.y + 1}px`)
+                                    currentPosition.y += 1
+                                }
+                            }
+                        }
+                        
+                    }else{
+                        console.log('cleared')
+                        clearInterval(moveMemeber)
+                    }
+                },10)
+                $(randomMember).css('position', 'absolute')
+                $(randomMember).css('width', `${clonedMemberPosition.width - 24}px`)
+                //$(randomMember).css('height', `${44 - 24}px`)
+
+                $(randomMember).css('z-index', 2)
+                console.log( $(randomMember).css('left'))
+
+            }
+            classMembers = classMembers.filter(name => {
+                return name !== classMembers[randomIndex]
+            })
         }
+
+        /*function getOffset(el) {
+            const rect = el.getBoundingClientRect();
+            return {
+              left: rect.left + window.scrollX,
+              top: rect.top + window.scrollY
+            };
+        }*/
 
         $('.start').on('click', function(){
             $('.welcome h1 , .welcome .start').css('display', 'none')
@@ -205,13 +276,10 @@
                                 }
                                 const highlightNameInterval = setInterval(function(){
                                     console.log('highlight', highlightCount)
-                                    if(highlightCount === 5){
+                                    if(highlightCount === 2){
                                         console.log('cleared highlight')
                                         clearInterval(highlightNameInterval)
-                                        randomIndex = Math.floor(Math.random() * 11)
-                                        classMembers = classMembers.filter(name => {
-                                            return name !== classMembers[randomIndex]
-                                        })
+                                        randomIndex = Math.floor(Math.random() * classMembers.length - 1)
                                         selectMember(randomIndex)
                                     }else{
                                         runButtonHighlight()
