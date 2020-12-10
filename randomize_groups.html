@@ -139,25 +139,39 @@
     <script>
         var synth = window.speechSynthesis;
         var voices = synth.getVoices();
-        let highlightCount
-        const classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
-
+        let highlightCount;
+        let randomIndex;
+        let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
 
         function runButtonHighlight(){
             let memberCount = 0
             const buttonFlash = setInterval(function(){
                 let member = document.querySelectorAll('.member')[memberCount]
                 member.style.backgroundColor = 'white'
+                member.style.color = 'black'
                 setTimeout(function(){
                     member.style.backgroundColor = 'initial'
-                    console.log(memberCount, member)
+                    member.style.color = 'white'
                 },300)
                 memberCount++
                 if(memberCount > classMembers.length - 1){
                     clearInterval(buttonFlash)
                 }
-            }, 500)
+            }, 62.5)
             highlightCount++
+        }
+
+        const selectMember = (randomIndex) => {
+            console.log( document.querySelectorAll('.member')[randomIndex])
+            let randomMember = $($('.member')[randomIndex])
+            randomMember.css('background-color' , 'white')
+            randomMember.css('color' , 'black')
+            setTimeout(function(){
+                randomMember.fadeOut(500)
+            },500)
+            console.log('finished interval')
+            console.log(classMembers)
+            console.log(randomIndex)
         }
 
         $('.start').on('click', function(){
@@ -194,10 +208,15 @@
                                     if(highlightCount === 5){
                                         console.log('cleared highlight')
                                         clearInterval(highlightNameInterval)
+                                        randomIndex = Math.floor(Math.random() * 11)
+                                        classMembers = classMembers.filter(name => {
+                                            return name !== classMembers[randomIndex]
+                                        })
+                                        selectMember(randomIndex)
                                     }else{
                                         runButtonHighlight()
                                     }
-                                },6500)
+                                },875)
                             })
                         //}
                     }else{
