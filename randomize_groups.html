@@ -51,13 +51,9 @@
             margin: 5px
         }
 
-
-        .team-members-container{
-            display: none
-        }
         .team-groups{
             width: 100%;
-            display: flex;
+            display: none;
             flex-direction: row;
             position: absolute;
             bottom: 10px;
@@ -80,7 +76,7 @@
             font-size: 65px;
         }
 
-        .start{
+        button{
             font-family: 'Ranchers', cursive;
             font-size:20px;
             border-radius: 25px;
@@ -89,7 +85,7 @@
         }
         .team{
             background-color:red;
-            height: 700px;
+            height: 600px;
             width: 20%;
             font-size: 20px;
             text-decoration: underline;
@@ -111,6 +107,14 @@
             text-decoration: underline;
             margin: 0
         }
+        .start-randomization{
+            display: none;
+            margin: 0 auto;
+        }
+
+        .randomization-container{
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -119,27 +123,48 @@
             <h1>Welcome to the Team Randomizer App</h1>
             <button class="start">Start</button>
         </div>
-        <!-- <div class="team-creation-container"> -->
+        <div class="randomization-container">
             <div class="team-members-container">
                 <h1>Team 2 Members</h1>
                 <div class="team-members">
                 </div>
             </div>
-            <div class="team-groups">
+            <button class="start-randomization">1st Member</button>
+        </div>
+        <div class="team-groups">
     
-            </div>
-        <!-- </div> -->
+        </div>
     </div>
 </body>
     <script>
         var synth = window.speechSynthesis;
         var voices = synth.getVoices();
+        let highlightCount
+        const classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
+
+
+        function runButtonHighlight(){
+            let memberCount = 0
+            const buttonFlash = setInterval(function(){
+                let member = document.querySelectorAll('.member')[memberCount]
+                member.style.backgroundColor = 'white'
+                setTimeout(function(){
+                    member.style.backgroundColor = 'initial'
+                    console.log(memberCount, member)
+                },300)
+                memberCount++
+                if(memberCount > classMembers.length - 1){
+                    clearInterval(buttonFlash)
+                }
+            }, 500)
+            highlightCount++
+        }
+
         $('.start').on('click', function(){
-            $('.welcome').css('display', 'none')
+            $('.welcome h1 , .welcome .start').css('display', 'none')
             text = "Welcome to the team randomizer app. Today we'll be randomizing teams for project 1. Lets see the memebers"
             var speech = new SpeechSynthesisUtterance(text);
             window.speechSynthesis.speak(speech);
-            const classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
             let count = 1;
             for (let i=0; i < classMembers.length; i += 3) {
                 const column = $(`<div class="team team${count}"></div>`)
@@ -149,21 +174,41 @@
                 count++
             }
             $('.container').css('align-items', 'start')
-            $('.team-members-container').css('display', 'block')
-            speech.onend = function(){
+            $('.randomization-container').css('display', 'block')
+            $('.team-groups').css('display', 'flex')
+            //speech.onend = function(){
                 classMembers.forEach((member,index) => {
                     let newP = $(`<p class="member">${member}</p>`)
                     if(index ===  classMembers.length - 1){
                         var to_speak = new SpeechSynthesisUtterance("and " + newP.text());
+                        // to_speak.onend = function(){
+                            $('.start-randomization').css('display', 'block')
+                            $('.start-randomization').on('click', function(e){
+                                highlightCount = 0
+                                let whiteBackgroundInterval, initialBackgroundInterval;
+                                if(highlightCount === 0){
+                                    runButtonHighlight()
+                                }
+                                const highlightNameInterval = setInterval(function(){
+                                    console.log('highlight', highlightCount)
+                                    if(highlightCount === 5){
+                                        console.log('cleared highlight')
+                                        clearInterval(highlightNameInterval)
+                                    }else{
+                                        runButtonHighlight()
+                                    }
+                                },6500)
+                            })
+                        //}
                     }else{
                         var to_speak = new SpeechSynthesisUtterance(newP.text());
                     }
-                    to_speak.onstart = function(){
+  //                  to_speak.onstart = function(){
                         $('.team-members').append(newP)
-                    }
+  //                  }
                     window.speechSynthesis.speak(to_speak);
                 })
-            }
+            //}
             
             $('.member').each(function(index) {
                 this.addEventListener('click', function(){
