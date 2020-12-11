@@ -140,22 +140,28 @@
         var voices = synth.getVoices();
         let highlightCount;
         let randomIndex;
-        let moveMemeber;
+        let moveMember;
+        let currentIndex;
+        let setNonCompleteArray = false
+        const completeTeams = []
+        let nonCompleteTeams = []
         let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
 
         function runButtonHighlight(){
             let memberCount = 0
             const buttonFlash = setInterval(function(){
-                let member = document.querySelectorAll('.member')[memberCount]
-                member.style.backgroundColor = 'white'
-                member.style.color = 'black'
-                setTimeout(function(){
-                    member.style.backgroundColor = 'initial'
-                    member.style.color = 'white'
-                },300)
-                memberCount++
-                if(memberCount > classMembers.length - 1){
-                    clearInterval(buttonFlash)
+                if(memberCount < classMembers.length){
+                    let member = document.querySelectorAll('.team-members .member')[memberCount]
+                    member.style.backgroundColor = 'white'
+                    member.style.color = 'black'
+                    setTimeout(function(){
+                        member.style.backgroundColor = 'initial'
+                        member.style.color = 'white'
+                    },300)
+                    memberCount++
+                    if(memberCount > classMembers.length - 1){
+                        clearInterval(buttonFlash)
+                    }
                 }
             }, 62.5)
             highlightCount++
@@ -209,9 +215,11 @@
             clonedMember.style.fontWeight = 'normal'
             clonedMember.style.fontSize = '20px'
             clonedMember.innerText = randomMember.innerText
+            randomMember.remove()
         }
 
-        const hideClone = (clonedMember) => {
+        const hideClone = (clonedMember, width) => {
+            clonedMember.style.width = `${width - 12}px`
             clonedMember.style.margin = 'unset'
             clonedMember.style.padding = 'unset'
             clonedMember.style.height = '44px'
@@ -225,18 +233,23 @@
             let randomMember = $('.team-members .member')[randomIndex]
             randomMember.style.backgroundColor = 'white'
             randomMember.style.color = 'black'
-            let randomGroupNumber = Math.floor(Math.random() * 3) //Make this number 4 dynamic based off number of group members
-            let allEmpty = true
-            for(let i= 0; i < $('.team').length; i++){
-
+            if(!setNonCompleteArray){
+                $('.team').each(function(){
+                    nonCompleteTeams.push(this)
+                })
+                setNonCompleteArray = true
             }
-            if(allEmpty){
-                let randomGroupDiv = $($('.team')[randomGroupNumber])
+            let numberOfAvailableDivs = $('.team').length
+            //does something here that I forgot
+            if(nonCompleteTeams.length > 0){
+//                console.log(nonCompleteTeams)
+                let randomGroupNumber = Math.floor(Math.random() * nonCompleteTeams.length) //Make this number 4 dynamic based off number of group members
+                let randomGroupDiv = $(nonCompleteTeams[randomGroupNumber])
                 let clonedMember = randomMember.cloneNode(true)
-                hideClone(clonedMember)
                 randomGroupDiv.append((clonedMember))
                 const clonedMemberPosition = clonedMember.getBoundingClientRect()
-                console.log(clonedMemberPosition)
+                hideClone(clonedMember, clonedMemberPosition.width)
+                //console.log(clonedMemberPosition)
                 $(randomMember).css('position', 'absolute')
                 $(randomMember).css('width', `${clonedMemberPosition.width - 24}px`)
                 const teamHolderRectangle = document.querySelector('.team-groups').getBoundingClientRect()
@@ -244,10 +257,23 @@
                 let endPosition = {x: (clonedMemberPosition.x - teamHolderRectangle.x - 4), y: clonedMemberPosition.y - 12}
                 moveMember = setInterval(() => handlePositioning(currentPosition,endPosition,randomMember,clonedMember),1)
                 $(randomMember).css('z-index', 2)
+                classMembers = classMembers.filter(name => {
+                    return name !== classMembers[randomIndex]
+                })
+                for(currentIndex= 0; currentIndex < numberOfAvailableDivs; currentIndex++){
+                    //loop through each div and check to see if any are less than the others
+                    //if so, set that team div as the randomGroupDiv
+                    //As you find empty non empty ones, set the random integer to -- of 4
+                    let teamLength = $('.team')[currentIndex].querySelectorAll('p').length
+                    console.log(`team ${currentIndex + 1}`, teamLength)
+                    if(teamLength > 2){
+                        nonCompleteTeams = nonCompleteTeams.filter(team => team.querySelectorAll('p').length !== 3)
+                        numberOfAvailableDivs = nonCompleteTeams.length
+                        console.log(nonCompleteTeams)
+                        console.log(numberOfAvailableDivs)
+                    }
+                }
             }
-            classMembers = classMembers.filter(name => {
-                return name !== classMembers[randomIndex]
-            })
         }
 
         $('.start').on('click', function(){
@@ -255,13 +281,13 @@
             text = "Welcome to the team randomizer app. Today we'll be randomizing teams for project 1. Lets see the memebers"
             var speech = new SpeechSynthesisUtterance(text);
             window.speechSynthesis.speak(speech);
-            let count = 1;
+            let teamNumber = 1;
             for (let i=0; i < classMembers.length; i += 3) {
-                const column = $(`<div class="team team${count}"></div>`)
-                const teamHeader = $(`<h1 class="group-header">Team ${count}<h1>`)
-                column.append(teamHeader)
+                const column = $(`<div class="team team${teamNumber}">
+                    <h1 class="group-header">Team ${teamNumber}<h1>
+                </div>`)
                 $('.team-groups').append(column)
-                count++
+                teamNumber++
             }
             $('.container').css('align-items', 'start')
             $('.randomization-container').css('display', 'block')
@@ -279,10 +305,9 @@
                                     runButtonHighlight()
                                 }
                                 const highlightNameInterval = setInterval(function(){
-                                    console.log('highlight', highlightCount)
                                     if(highlightCount === 2){
-                                        console.log('cleared highlight')
                                         clearInterval(highlightNameInterval)
+                                        console.log('length', classMembers.length)
                                         randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
                                         selectMember(randomIndex)
                                     }else{
@@ -290,13 +315,13 @@
                                     }
                                 },875)
                             })
-                        //}
+                  //      }
                     }else{
                         var to_speak = new SpeechSynthesisUtterance(newP.text());
                     }
-  //                  to_speak.onstart = function(){
+                //    to_speak.onstart = function(){
                         $('.team-members').append(newP)
-  //                  }
+              //    }
                     window.speechSynthesis.speak(to_speak);
                 })
             //}
