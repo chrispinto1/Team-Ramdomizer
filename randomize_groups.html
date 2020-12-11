@@ -63,6 +63,7 @@
             height: -webkit-fill-available;
             overflow: hidden;
         }
+
         body{
             background-image: url('https://cutewallpaper.org/21/jeopardy-wallpapers/Blue-Xmas-Looping-Background-Stock-Footage-Video-100-Royalty-free-605761-Shutterstock.jpg');
             background-repeat: no-repeat;
@@ -114,9 +115,121 @@
         .randomization-container{
             display: none;
         }
+
+        @keyframes dropConfetti{
+            0%{height: 0%}
+            1%{height: 1%}
+            2%{height: 2%}
+            3%{height: 3%}
+            4%{height: 4%}
+            5%{height: 5%}
+            6%{height: 6%}
+            7%{height: 7%}
+            8%{height: 8%}
+            9%{height: 9%}
+            10%{height: 10%}
+            11%{height: 11%}
+            12%{height: 12%}
+            13%{height: 13%}
+            14%{height: 14%}
+            15%{height: 15%}
+            16%{height: 16%}
+            17%{height: 17%}
+            18%{height: 18%}
+            19%{height: 19%}
+            20%{height: 20%}
+            21%{height: 21%}
+            22%{height: 22%}
+            23%{height: 23%}
+            24%{height: 24%}
+            25%{height: 25%}
+            26%{height: 26%}
+            27%{height: 27%}
+            28%{height: 28%}
+            29%{height: 29%}
+            30%{height: 30%}
+            31%{height: 31%}
+            32%{height: 32%}
+            33%{height: 33%}
+            34%{height: 34%}
+            35%{height: 35%}
+            36%{height: 36%}
+            37%{height: 37%}
+            38%{height: 38%}
+            39%{height: 39%}
+            40%{height: 40%}
+            41%{height: 41%}
+            42%{height: 42%}
+            43%{height: 43%}
+            44%{height: 44%}
+            45%{height: 45%}
+            46%{height: 46%}
+            47%{height: 47%}
+            48%{height: 48%}
+            49%{height: 49%}
+            50%{height: 50%}
+            51%{height: 51%}
+            52%{height: 52%}
+            53%{height: 53%}
+            54%{height: 54%}
+            55%{height: 55%}
+            56%{height: 56%}
+            57%{height: 57%}
+            58%{height: 58%}
+            59%{height: 59%}
+            60%{height: 60%}
+            61%{height: 61%}
+            62%{height: 62%}
+            63%{height: 63%}
+            64%{height: 64%}
+            65%{height: 65%}
+            66%{height: 66%}
+            67%{height: 67%}
+            68%{height: 68%}
+            69%{height: 69%}
+            70%{height: 70%}
+            71%{height: 71%}
+            72%{height: 72%}
+            73%{height: 73%}
+            74%{height: 74%}
+            75%{height: 75%}
+            76%{height: 76%}
+            77%{height: 77%}
+            78%{height: 78%}
+            79%{height: 79%}
+            80%{height: 80%}
+            81%{height: 81%}
+            82%{height: 82%}
+            83%{height: 83%}
+            84%{height: 84%}
+            85%{height: 85%}
+            86%{height: 86%}
+            87%{height: 87%}
+            88%{height: 88%}
+            89%{height: 89%}
+            90%{height: 90%}
+            91%{height: 91%}
+            92%{height: 92%}
+            93%{height: 93%}
+            94%{height: 94%}
+            95%{height: 95%}
+            96%{height: 96%}
+            97%{height: 97%}
+            98%{height: 98%}
+            99%{height: 99%}
+            100%{height: 100%}
+        }
+
+        #world{
+            display: none;
+            position:absolute;
+            width:100%;
+            animation: dropConfetti 3s
+        }
     </style>
 </head>
 <body>
+    <canvas id="world"></canvas>
     <div class="container">
         <div class="welcome">
             <h1>Welcome to the Team Randomizer App</h1>
@@ -136,6 +249,9 @@
     </div>
 </body>
     <script>
+        $(document).ready(function(){
+            confetti()
+        })
         var synth = window.speechSynthesis;
         var voices = synth.getVoices();
         let highlightCount;
@@ -143,6 +259,7 @@
         let moveMember;
         let currentIndex;
         let setNonCompleteArray = false
+        let crowdClapping = new Audio('./applause3.mp3');
         const completeTeams = []
         let nonCompleteTeams = []
         let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
@@ -242,14 +359,12 @@
             let numberOfAvailableDivs = $('.team').length
             //does something here that I forgot
             if(nonCompleteTeams.length > 0){
-//                console.log(nonCompleteTeams)
                 let randomGroupNumber = Math.floor(Math.random() * nonCompleteTeams.length) //Make this number 4 dynamic based off number of group members
                 let randomGroupDiv = $(nonCompleteTeams[randomGroupNumber])
                 let clonedMember = randomMember.cloneNode(true)
                 randomGroupDiv.append((clonedMember))
                 const clonedMemberPosition = clonedMember.getBoundingClientRect()
                 hideClone(clonedMember, clonedMemberPosition.width)
-                //console.log(clonedMemberPosition)
                 $(randomMember).css('position', 'absolute')
                 $(randomMember).css('width', `${clonedMemberPosition.width - 24}px`)
                 const teamHolderRectangle = document.querySelector('.team-groups').getBoundingClientRect()
@@ -261,70 +376,71 @@
                     return name !== classMembers[randomIndex]
                 })
                 for(currentIndex= 0; currentIndex < numberOfAvailableDivs; currentIndex++){
-                    //loop through each div and check to see if any are less than the others
-                    //if so, set that team div as the randomGroupDiv
-                    //As you find empty non empty ones, set the random integer to -- of 4
                     let teamLength = $('.team')[currentIndex].querySelectorAll('p').length
-                    console.log(`team ${currentIndex + 1}`, teamLength)
                     if(teamLength > 2){
                         nonCompleteTeams = nonCompleteTeams.filter(team => team.querySelectorAll('p').length !== 3)
                         numberOfAvailableDivs = nonCompleteTeams.length
-                        console.log(nonCompleteTeams)
-                        console.log(numberOfAvailableDivs)
                     }
                 }
             }
         }
 
-        $('.start').on('click', function(){
-            $('.welcome h1 , .welcome .start').css('display', 'none')
-            text = "Welcome to the team randomizer app. Today we'll be randomizing teams for project 1. Lets see the memebers"
-            var speech = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(speech);
-            let teamNumber = 1;
-            for (let i=0; i < classMembers.length; i += 3) {
-                const column = $(`<div class="team team${teamNumber}">
-                    <h1 class="group-header">Team ${teamNumber}<h1>
-                </div>`)
-                $('.team-groups').append(column)
-                teamNumber++
-            }
-            $('.container').css('align-items', 'start')
-            $('.randomization-container').css('display', 'block')
-            $('.team-groups').css('display', 'flex')
-            //speech.onend = function(){
-                classMembers.forEach((member,index) => {
-                    let newP = $(`<p class="member">${member}</p>`)
-                    if(index ===  classMembers.length - 1){
-                        var to_speak = new SpeechSynthesisUtterance("and " + newP.text());
-                        // to_speak.onend = function(){
-                            $('.start-randomization').css('display', 'block')
-                            $('.start-randomization').on('click', function(e){
-                                highlightCount = 0
-                                if(highlightCount === 0){
+        const runRandomization = () => {
+            classMembers.forEach((member,index) => {
+                let newP = $(`<p class="member">${member}</p>`)
+                if(index ===  classMembers.length - 1){
+                    var to_speak = new SpeechSynthesisUtterance("and " + newP.text());
+                    to_speak.onend = function(){
+                        $('.start-randomization').css('display', 'block')
+                        $('.start-randomization').on('click', function(e){
+                            highlightCount = 0
+                            if(highlightCount === 0){
+                                runButtonHighlight()
+                            }
+                            const highlightNameInterval = setInterval(function(){
+                                if(highlightCount === 2){
+                                    clearInterval(highlightNameInterval)
+                                    randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
+                                    selectMember(randomIndex)
+                                }else{
                                     runButtonHighlight()
                                 }
-                                const highlightNameInterval = setInterval(function(){
-                                    if(highlightCount === 2){
-                                        clearInterval(highlightNameInterval)
-                                        console.log('length', classMembers.length)
-                                        randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
-                                        selectMember(randomIndex)
-                                    }else{
-                                        runButtonHighlight()
-                                    }
-                                },875)
-                            })
-                  //      }
-                    }else{
-                        var to_speak = new SpeechSynthesisUtterance(newP.text());
+                            },875)
+                        })
                     }
-                //    to_speak.onstart = function(){
-                        $('.team-members').append(newP)
-              //    }
-                    window.speechSynthesis.speak(to_speak);
-                })
-            //}
+                }else{
+                    var to_speak = new SpeechSynthesisUtterance(newP.text());
+                }
+                to_speak.onstart = function(){
+                    $('.team-members').append(newP)
+                    crowdClapping.play();
+                }
+                window.speechSynthesis.speak(to_speak);
+            })
+        }
+
+        $('.start').on('click', function(){
+            $('#world').css('display', 'block')
+            text = "Welcome to the team randomizer game! A game show that puts teams in random groups! Our Contestants will be put into groups by a not so random, random javascript function!"
+            var speech = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(speech);
+            speech.onend = function(){
+            $('.welcome h1 , .welcome .start').css('display', 'none')
+
+                let teamNumber = 1;
+                for (let i=0; i < classMembers.length; i += 3) {
+                    const column = $(`<div class="team team${teamNumber}">
+                        <h1 class="group-header">Team ${teamNumber}<h1>
+                    </div>`)
+                    $('.team-groups').append(column)
+                    teamNumber++
+                }
+                $('.container').css('align-items', 'start')
+                $('.randomization-container').css('display', 'block')
+                $('.team-groups').css('display', 'flex')
+                    new Audio('./applause3.mp3').play();
+                    setTimeout(runRandomization, 1000)
+            }
             
             $('.member').each(function(index) {
                 this.addEventListener('click', function(){
@@ -334,5 +450,122 @@
                 })
             })
         })
+        //Code by Linmiao Xu codepen link  - https://codepen.io/linrock/pen/Amdhr/
+        const confetti = () => {
+            var COLORS, Confetti, NUM_CONFETTI, PI_2, canvas, confetti, context, drawCircle, i, range, resizeWindow, xpos;
+          
+            NUM_CONFETTI = 350;
+          
+            COLORS = [[85, 71, 106], [174, 61, 99], [219, 56, 83], [244, 92, 68], [248, 182, 70]];
+          
+            PI_2 = 2 * Math.PI;
+          
+            canvas = document.getElementById("world");
+          
+            context = canvas.getContext("2d");
+          
+            window.w = 0;
+          
+            window.h = 0;
+          
+            resizeWindow = function() {
+              window.w = canvas.width = window.innerWidth;
+              return window.h = canvas.height = window.innerHeight;
+            };
+          
+            window.addEventListener('resize', resizeWindow, false);
+          
+            window.onload = function() {
+              return setTimeout(resizeWindow, 0);
+            };
+          
+            range = function(a, b) {
+              return (b - a) * Math.random() + a;
+            };
+          
+            drawCircle = function(x, y, r, style) {
+              context.beginPath();
+              context.arc(x, y, r, 0, PI_2, false);
+              context.fillStyle = style;
+              return context.fill();
+            };
+          
+            xpos = 0.5;
+          
+            document.onmousemove = function(e) {
+              return xpos = e.pageX / w;
+            };
+          
+            window.requestAnimationFrame = (function() {
+              return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+                return window.setTimeout(callback, 1000 / 60);
+              };
+            })();
+          
+            Confetti = (function() {
+              function Confetti() {
+                this.style = COLORS[~~range(0, 5)];
+                this.rgb = "rgba(" + this.style[0] + "," + this.style[1] + "," + this.style[2];
+                this.r = ~~range(2, 6);
+                this.r2 = 2 * this.r;
+                this.replace();
+              }
+          
+              Confetti.prototype.replace = function() {
+                this.opacity = 0;
+                this.dop = 0.03 * range(1, 4);
+                this.x = range(-this.r2, w - this.r2);
+                this.y = range(-20, h - this.r2);
+                this.xmax = w - this.r;
+                this.ymax = h - this.r;
+                this.vx = range(0, 2) + 8 * xpos - 5;
+                return this.vy = 0.7 * this.r + range(-1, 1);
+              };
+          
+              Confetti.prototype.draw = function() {
+                var _ref;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.opacity += this.dop;
+                if (this.opacity > 1) {
+                  this.opacity = 1;
+                  this.dop *= -1;
+                }
+                if (this.opacity < 0 || this.y > this.ymax) {
+                  this.replace();
+                }
+                if (!((0 < (_ref = this.x) && _ref < this.xmax))) {
+                  this.x = (this.x + this.xmax) % this.xmax;
+                }
+                return drawCircle(~~this.x, ~~this.y, this.r, this.rgb + "," + this.opacity + ")");
+              };
+          
+              return Confetti;
+          
+            })();
+          
+            confetti = (function() {
+              var _i, _results;
+              _results = [];
+              for (i = _i = 1; 1 <= NUM_CONFETTI ? _i <= NUM_CONFETTI : _i >= NUM_CONFETTI; i = 1 <= NUM_CONFETTI ? ++_i : --_i) {
+                _results.push(new Confetti);
+              }
+              return _results;
+            })();
+          
+            window.step = function() {
+              var c, _i, _len, _results;
+              requestAnimationFrame(step);
+              context.clearRect(0, 0, w, h);
+              _results = [];
+              for (_i = 0, _len = confetti.length; _i < _len; _i++) {
+                c = confetti[_i];
+                _results.push(c.draw());
+              }
+              return _results;
+            };
+          
+            step();
+        }
     </script>
 </html>
