@@ -245,6 +245,7 @@
                 </div>
             </div>
             <button class="start-randomization">1st Member</button>
+            <button class="save">Save Groups</button>
         </div>
         <div class="team-groups">
     
@@ -254,7 +255,7 @@
     <script>
         //change these parameters only
         const groupNumber = 2
-
+        const maxMembersPerGroup = 3
 
         //"created with the voices from LOVO @ www.lovo.ai.”
         
@@ -263,7 +264,7 @@
         //let classMembers = ['Adia Boyd','Alexander Woolley','Beauregard Hengst','Caroline Tobin','Caroline Lynch', 'Charles Puente-matos', 'David Ready', 'Dominique Christopher', 'Donnahue George', 'Eric Freyer', 'Esiena Ekwofia', 'Evan Chu', 'Fiach Mchugh hill']
         
         //Group 2
-        //let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
+        let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
         
         //Group 3
         //let classMembers = ['Laura Aupert','Lindsey Bowen','Luwenxi Song','Margaret Elson','Mariah Rivera','Mateo Molina','Matthew Vanni','Melissa Kinsey','Natalia Carvajal','Nicholas Jazgunovich','Peter Cardillo','Purna Gurung','Rajahni Fields']
@@ -282,14 +283,22 @@
         let currentIndex;
         let randomMember;
         let numberOfAvailableDivs
-        let suspenseMusic
+        let suspenseMusic;
+        let randomMemberAudio;
+        let started = true
         let setNonCompleteArray = false
-        let crowdClapping = new Audio('./applause3.mp3');
+        let crowdClapping = new Audio('./Sounds/applause3.mp3');
         const completeTeams = []
         let nonCompleteTeams = []
 
         function runButtonHighlight(){
             let memberCount = 0
+            if(started){
+                $('.start-randomization').text('Next Member')
+                started = false
+            }else if($('.team-members .member').length === 1){
+                $('.start-randomization').text('Final Member')
+            }
             const buttonFlash = setInterval(function(){
                 if(memberCount < classMembers.length){
                     let member = document.querySelectorAll('.team-members .member')[memberCount]
@@ -372,7 +381,7 @@
 
         const selectMember = (randomIndex) => {
             randomMember = $('.team-members .member')[randomIndex]
-            let randomMemberAudio = new Audio(`./Group_2_names/${randomMember.innerText.split(' ').join('_')}.wav`)
+            randomMemberAudio = new Audio(`./Sounds/Group_2_names/${randomMember.innerText.split(' ').join('_')}.wav`)
             randomMemberAudio.play()
             randomMember.style.backgroundColor = 'white'
             randomMember.style.color = 'black'
@@ -407,42 +416,56 @@
             })
             for(currentIndex= 0; currentIndex < numberOfAvailableDivs; currentIndex++){
                 let teamLength = $('.team')[currentIndex].querySelectorAll('p').length
-                console.log(`Team ${currentIndex}`, teamLength)
-                if(teamLength > 2){
-                    console.log('filled')
-                    nonCompleteTeams = nonCompleteTeams.filter(team => team.querySelectorAll('p').length !== 3)
+                if(teamLength === maxMembersPerGroup){
+                    nonCompleteTeams = nonCompleteTeams.filter(team => team.querySelectorAll('p').length !== maxMembersPerGroup)
                     numberOfAvailableDivs = nonCompleteTeams.length
-                    console.log(nonCompleteTeams)
                 }
             }
+            if(nonCompleteTeams.length <= 0){
+                randomMemberAudio.onended = function(){
+                    let outroAudio = new Audio(`./Sounds/Congratulations/congratulations_team${groupNumber}.wav`)
+                    outroAudio.play()
+                    outroAudio.onended = function(){
+                        $('.start-randomization').css('display', 'none')
+                        $('.save').css('display', 'block')
+                        document.querySelector('.save').addEventListener('click', handleSavingGroupData)
+                    }
+                }
+            }
+        }
+
+        const handleSavingGroupData = () => {
+            debugger
+        }
+
+        const handleRandomButtonClick = () => {
+            suspenseMusic = new Audio('./Sounds/suspense.mp3')
+            suspenseMusic.play()
+            highlightCount = 0
+            if(highlightCount === 0){
+                runButtonHighlight()
+            }
+            const highlightNameInterval = setInterval(function(){
+                if(highlightCount === 5){
+                    suspenseMusic.pause()
+                    clearInterval(highlightNameInterval)
+                    randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
+                    selectMember(randomIndex)
+                }else{
+                    runButtonHighlight()
+                }
+            },875)
         }
 
         const runRandomization = () => {
             let i = 0;
             let nameInterval = setInterval(function(){
-                let classMember = new Audio(`./Group_2_names/${classMembers[i].split(' ').join('_')}.wav`)
+                let classMember = new Audio(`./Sounds/Group_2_names/${classMembers[i].split(' ').join('_')}.wav`)
                 let newP = $(`<p class="member">${classMembers[i]}</p>`)
                 if(i ===  classMembers.length - 1){
                     clearInterval(nameInterval)
                     $('.start-randomization').css('display', 'block')
-                    $('.start-randomization').on('click', function(e){
-                        suspenseMusic = new Audio('./suspense.mp3')
-                        suspenseMusic.play()
-                        highlightCount = 0
-                        if(highlightCount === 0){
-                            runButtonHighlight()
-                        }
-                        const highlightNameInterval = setInterval(function(){
-                            if(highlightCount === 5){
-                                suspenseMusic.pause()
-                                clearInterval(highlightNameInterval)
-                                randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
-                                selectMember(randomIndex)
-                            }else{
-                                runButtonHighlight()
-                            }
-                        },875)
-                    })
+                    $('.start-randomization').on('click', handleRandomButtonClick)
                 }
                 classMember.play()
                 $('.team-members').append(newP)
@@ -455,13 +478,13 @@
 
         $('.start').on('click', function(){
             $('#world').css('display', 'block')
-            const intro = new Audio('./intro.wav');
+            const intro = new Audio('./Sounds/intro.wav');
             intro.play()
             intro.onended = function(){
                 crowdClapping.play()
                 $('.welcome h1 , .welcome .start').css('display', 'none')
                 let teamNumber = 1;
-                for (let i=0; i < classMembers.length; i += 3) {
+                for (let i=0; i < classMembers.length; i += maxMembersPerGroup) {
                     const column = $(`<div class="team team${teamNumber}">
                         <h1 class="group-header">Team ${teamNumber}<h1>
                     </div>`)
