@@ -265,6 +265,7 @@
         let currentIndex;
         let randomMember;
         let numberOfAvailableDivs
+        let suspenseMusic
         let setNonCompleteArray = false
         let crowdClapping = new Audio('./applause3.mp3');
         const completeTeams = []
@@ -354,6 +355,8 @@
 
         const selectMember = (randomIndex) => {
             randomMember = $('.team-members .member')[randomIndex]
+            let randomMemberAudio = new Audio(`./Group_2_names/${randomMember.innerText.split(' ').join('_')}.wav`)
+            randomMemberAudio.play()
             randomMember.style.backgroundColor = 'white'
             randomMember.style.color = 'black'
             if(!setNonCompleteArray){
@@ -406,12 +409,15 @@
                     clearInterval(nameInterval)
                     $('.start-randomization').css('display', 'block')
                     $('.start-randomization').on('click', function(e){
+                        suspenseMusic = new Audio('./suspense.mp3')
+                        suspenseMusic.play()
                         highlightCount = 0
                         if(highlightCount === 0){
                             runButtonHighlight()
                         }
                         const highlightNameInterval = setInterval(function(){
-                            if(highlightCount === 2){
+                            if(highlightCount === 5){
+                                suspenseMusic.pause()
                                 clearInterval(highlightNameInterval)
                                 randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
                                 selectMember(randomIndex)
