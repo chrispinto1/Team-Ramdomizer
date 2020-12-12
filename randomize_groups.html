@@ -61,6 +61,14 @@
             justify-content: center;
             width: 100%;
         }
+
+        .team-groups-homepage{
+            display: none;
+            flex-direction: row;
+            bottom: 10px;
+            justify-content: center;
+            width: 100%;
+        }
         html{
             height: -webkit-fill-available;
             overflow: hidden;
@@ -229,14 +237,23 @@
             width:100%;
             animation: dropConfetti 3s
         }
+
+        .welcome-message{
+            display: none;
+        }
     </style>
 </head>
 <body>
     <canvas id="world"></canvas>
     <div class="container">
         <div class="welcome">
-            <h1>Welcome to the Team Randomizer App</h1>
-            <button class="start">Start</button>
+            <div class="welcome-message">
+                <h1>Welcome to the Team Randomizer App</h1>
+                <button class="start">Start</button>
+            </div>
+            <div class="team-groups-homepage">
+    
+            </div>
         </div>
         <div class="randomization-container">
             <div class="team-members-container">
@@ -273,7 +290,33 @@
         //let classMembers = ['Ramon Torres','Samya Fiki','Shantel Modeste','Thokozile Soko','Thomas Rumore','Veronika Balakhovsky','Vincent Hart','Viviana Arenas','Wendy Figueroa','Jack Reed','William Cannon']
 
         $(document).ready(function(){
-            confetti()
+            if(localStorage.getItem('team1')){
+                let column;
+                $('.team-groups-homepage').css('display', 'flex')
+                $('.welcome').css('width', '100%')
+                const keys = []
+                Object.keys(localStorage).forEach(key => {
+                    if(key.includes('team')){
+                        keys.push(key)
+                    }
+                })
+                keys.forEach((key, index) => {
+                    column = $(`<div class="team team${index+1}">
+                        <h1 class="group-header" style="text-decoration: capitalize">${key.slice(0,-1)} ${key.slice(-1)}</h1>
+                    </div>
+                    `)
+                    localStorage.getItem(`${key.slice(0,-1)}${index + 1}`).split(',').forEach(member => {
+                        if(member != ""){      
+                            const memberP = $(`<p class="member">${member}</p>`)
+                            column.append(memberP)
+                        }
+                    })
+                    $('.team-groups-homepage').append(column)
+                })
+            }else{
+                confetti()
+                startGame()
+            }
         })
         var synth = window.speechSynthesis;
         var voices = synth.getVoices();
@@ -435,7 +478,6 @@
         }
 
         const handleSavingGroupData = () => {
-            debugger
             document.querySelectorAll('.team').forEach((group, index) => {
                 let teamString = ""
                 group.querySelectorAll('p').forEach(div => {
@@ -483,27 +525,29 @@
             },5500)
         }
 
-        $('.start').on('click', function(){
-            $('#world').css('display', 'block')
-            const intro = new Audio('./Sounds/intro.wav');
-            intro.play()
-            intro.onended = function(){
-                crowdClapping.play()
-                $('.welcome h1 , .welcome .start').css('display', 'none')
-                let teamNumber = 1;
-                for (let i=0; i < classMembers.length; i += maxMembersPerGroup) {
-                    const column = $(`<div class="team team${teamNumber}">
-                        <h1 class="group-header">Team ${teamNumber}<h1>
-                    </div>`)
-                    $('.team-groups').append(column)
-                    teamNumber++
+        const startGame = () => {
+            $('.start').on('click', function(){
+                $('#world').css('display', 'block')
+                const intro = new Audio('./Sounds/intro.wav');
+                intro.play()
+                intro.onended = function(){
+                    crowdClapping.play()
+                    $('.welcome h1 , .welcome .start').css('display', 'none')
+                    let teamNumber = 1;
+                    for (let i=0; i < classMembers.length; i += maxMembersPerGroup) {
+                        const column = $(`<div class="team team${teamNumber}">
+                            <h1 class="group-header">Team ${teamNumber}</h1>
+                        </div>`)
+                        $('.team-groups').append(column)
+                        teamNumber++
+                    }
+                    $('.container').css('align-items', 'start')
+                    $('.randomization-container').css('display', 'block')
+                    $('.team-groups').css('display', 'flex')
+                    crowdClapping.oneded = runRandomization()
                 }
-                $('.container').css('align-items', 'start')
-                $('.randomization-container').css('display', 'block')
-                $('.team-groups').css('display', 'flex')
-                crowdClapping.oneded = runRandomization()
-            }
-        })
+            })
+        }
         //Code Converted into Javascript from CoffeeScript by Linmiao Xu codepen link  - https://codepen.io/linrock/pen/Amdhr/
         const confetti = () => {
             var COLORS, Confetti, NUM_CONFETTI, PI_2, canvas, confetti, context, drawCircle, i, range, resizeWindow, xpos;
