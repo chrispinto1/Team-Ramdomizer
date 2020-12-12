@@ -251,7 +251,6 @@
     <script>
         //"created with the voices from LOVO @ www.lovo.ai.”
         let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
-
         $(document).ready(function(){
             confetti()
         })
@@ -371,7 +370,6 @@
             let randomGroupNumber = Math.floor(Math.random() * nonCompleteTeams.length)
             let randomGroupDiv = $(nonCompleteTeams[randomGroupNumber])
             let clonedMember = randomMember.cloneNode(true)
-
             randomGroupDiv.append((clonedMember))
             const clonedMemberPosition = clonedMember.getBoundingClientRect()
             hideClone(clonedMember, clonedMemberPosition.width)
@@ -394,49 +392,45 @@
         }
 
         const runRandomization = () => {
-            classMembers.forEach((member,index) => {
-                let newP = $(`<p class="member">${member}</p>`)
-                if(index ===  classMembers.length - 1){
-                    var to_speak = new SpeechSynthesisUtterance("and " + newP.text());
-                    to_speak.onend = function(){
-                        $('.start-randomization').css('display', 'block')
-                        $('.start-randomization').on('click', function(e){
-                            highlightCount = 0
-                            if(highlightCount === 0){
+            let i = 0;
+            let nameInterval = setInterval(function(){
+                let classMember = new Audio(`./Group_2_names/${classMembers[i].split(' ').join('_')}.wav`)
+                let newP = $(`<p class="member">${classMembers[i]}</p>`)
+                if(i ===  classMembers.length - 1){
+                    clearInterval(nameInterval)
+                    $('.start-randomization').css('display', 'block')
+                    $('.start-randomization').on('click', function(e){
+                        highlightCount = 0
+                        if(highlightCount === 0){
+                            runButtonHighlight()
+                        }
+                        const highlightNameInterval = setInterval(function(){
+                            if(highlightCount === 2){
+                                clearInterval(highlightNameInterval)
+                                randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
+                                selectMember(randomIndex)
+                            }else{
                                 runButtonHighlight()
                             }
-                            const highlightNameInterval = setInterval(function(){
-                                if(highlightCount === 2){
-                                    clearInterval(highlightNameInterval)
-                                    randomIndex = Math.floor(Math.random() * (classMembers.length - 1))
-                                    selectMember(randomIndex)
-                                }else{
-                                    runButtonHighlight()
-                                }
-                            },875)
-                        })
-                    }
-                }else{
-                    var to_speak = new SpeechSynthesisUtterance(newP.text());
+                        },875)
+                    })
                 }
-                to_speak.onstart = function(){
-                    $('.team-members').append(newP)
+                classMember.play()
+                $('.team-members').append(newP)
+                classMember.onended = function(){
                     crowdClapping.play();
                 }
-                window.speechSynthesis.speak(to_speak);
-            })
+                i++
+            },5500)
         }
 
         $('.start').on('click', function(){
             $('#world').css('display', 'block')
             const intro = new Audio('./intro.wav');
             intro.play()
-            //text = "Welcome to the team randomizer game! A game show that puts teams in random groups! Our Contestants will be put into groups by a not so random, random javascript function!"
-            //var speech = new SpeechSynthesisUtterance(text);
-            //window.speechSynthesis.speak(speech);
             intro.onended = function(){
+                crowdClapping.play()
                 $('.welcome h1 , .welcome .start').css('display', 'none')
-
                 let teamNumber = 1;
                 for (let i=0; i < classMembers.length; i += 3) {
                     const column = $(`<div class="team team${teamNumber}">
@@ -448,19 +442,10 @@
                 $('.container').css('align-items', 'start')
                 $('.randomization-container').css('display', 'block')
                 $('.team-groups').css('display', 'flex')
-                    new Audio('./intro').play();
-                    setTimeout(runRandomization, 6000)
+                crowdClapping.oneded = runRandomization()
             }
-            
-            $('.member').each(function(index) {
-                this.addEventListener('click', function(){
-                    var to_speak = new SpeechSynthesisUtterance(this.innerText);
-                    window.speechSynthesis.speak(to_speak);
-                    console.log(voices)
-                })
-            })
         })
-        //Code by Linmiao Xu codepen link  - https://codepen.io/linrock/pen/Amdhr/
+        //Code Converted into Javascript from CoffeeScript by Linmiao Xu codepen link  - https://codepen.io/linrock/pen/Amdhr/
         const confetti = () => {
             var COLORS, Confetti, NUM_CONFETTI, PI_2, canvas, confetti, context, drawCircle, i, range, resizeWindow, xpos;
           
