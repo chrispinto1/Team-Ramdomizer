@@ -249,6 +249,9 @@
     </div>
 </body>
     <script>
+        //"created with the voices from LOVO @ www.lovo.ai.”
+        let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
+
         $(document).ready(function(){
             confetti()
         })
@@ -262,7 +265,6 @@
         let crowdClapping = new Audio('./applause3.mp3');
         const completeTeams = []
         let nonCompleteTeams = []
-        let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
 
         function runButtonHighlight(){
             let memberCount = 0
@@ -359,28 +361,34 @@
             let numberOfAvailableDivs = $('.team').length
             //does something here that I forgot
             if(nonCompleteTeams.length > 0){
-                let randomGroupNumber = Math.floor(Math.random() * nonCompleteTeams.length) //Make this number 4 dynamic based off number of group members
-                let randomGroupDiv = $(nonCompleteTeams[randomGroupNumber])
-                let clonedMember = randomMember.cloneNode(true)
-                randomGroupDiv.append((clonedMember))
-                const clonedMemberPosition = clonedMember.getBoundingClientRect()
-                hideClone(clonedMember, clonedMemberPosition.width)
-                $(randomMember).css('position', 'absolute')
-                $(randomMember).css('width', `${clonedMemberPosition.width - 24}px`)
-                const teamHolderRectangle = document.querySelector('.team-groups').getBoundingClientRect()
-                let currentPosition = {x: randomMember.getBoundingClientRect().x, y: randomMember.getBoundingClientRect().y}
-                let endPosition = {x: (clonedMemberPosition.x - teamHolderRectangle.x - 4), y: clonedMemberPosition.y - 12}
-                moveMember = setInterval(() => handlePositioning(currentPosition,endPosition,randomMember,clonedMember),1)
-                $(randomMember).css('z-index', 2)
-                classMembers = classMembers.filter(name => {
-                    return name !== classMembers[randomIndex]
-                })
-                for(currentIndex= 0; currentIndex < numberOfAvailableDivs; currentIndex++){
-                    let teamLength = $('.team')[currentIndex].querySelectorAll('p').length
-                    if(teamLength > 2){
-                        nonCompleteTeams = nonCompleteTeams.filter(team => team.querySelectorAll('p').length !== 3)
-                        numberOfAvailableDivs = nonCompleteTeams.length
-                    }
+                putRandomMemberInTeam()
+            }
+        }
+
+        const putRandomMemberInTeam = () => {
+            const teamHolderRectangle = document.querySelector('.team-groups').getBoundingClientRect()
+            //Set random Number and crate clone of random member
+            let randomGroupNumber = Math.floor(Math.random() * nonCompleteTeams.length)
+            let randomGroupDiv = $(nonCompleteTeams[randomGroupNumber])
+            let clonedMember = randomMember.cloneNode(true)
+
+            randomGroupDiv.append((clonedMember))
+            const clonedMemberPosition = clonedMember.getBoundingClientRect()
+            hideClone(clonedMember, clonedMemberPosition.width)
+            $(randomMember).css('position', 'absolute')
+            $(randomMember).css('width', `${clonedMemberPosition.width - 24}px`)
+            let currentPosition = {x: randomMember.getBoundingClientRect().x, y: randomMember.getBoundingClientRect().y}
+            let endPosition = {x: (clonedMemberPosition.x - teamHolderRectangle.x - 4), y: clonedMemberPosition.y - 12}
+            moveMember = setInterval(() => handlePositioning(currentPosition,endPosition,randomMember,clonedMember),1)
+            $(randomMember).css('z-index', 2)
+            classMembers = classMembers.filter(name => {
+                return name !== classMembers[randomIndex]
+            })
+            for(currentIndex= 0; currentIndex < numberOfAvailableDivs; currentIndex++){
+                let teamLength = $('.team')[currentIndex].querySelectorAll('p').length
+                if(teamLength > 2){
+                    nonCompleteTeams = nonCompleteTeams.filter(team => team.querySelectorAll('p').length !== 3)
+                    numberOfAvailableDivs = nonCompleteTeams.length
                 }
             }
         }
@@ -421,11 +429,13 @@
 
         $('.start').on('click', function(){
             $('#world').css('display', 'block')
-            text = "Welcome to the team randomizer game! A game show that puts teams in random groups! Our Contestants will be put into groups by a not so random, random javascript function!"
-            var speech = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(speech);
-            speech.onend = function(){
-            $('.welcome h1 , .welcome .start').css('display', 'none')
+            const intro = new Audio('./intro.wav');
+            intro.play()
+            //text = "Welcome to the team randomizer game! A game show that puts teams in random groups! Our Contestants will be put into groups by a not so random, random javascript function!"
+            //var speech = new SpeechSynthesisUtterance(text);
+            //window.speechSynthesis.speak(speech);
+            intro.onended = function(){
+                $('.welcome h1 , .welcome .start').css('display', 'none')
 
                 let teamNumber = 1;
                 for (let i=0; i < classMembers.length; i += 3) {
@@ -438,8 +448,8 @@
                 $('.container').css('align-items', 'start')
                 $('.randomization-container').css('display', 'block')
                 $('.team-groups').css('display', 'flex')
-                    new Audio('./applause3.mp3').play();
-                    setTimeout(runRandomization, 1000)
+                    new Audio('./intro').play();
+                    setTimeout(runRandomization, 6000)
             }
             
             $('.member').each(function(index) {
