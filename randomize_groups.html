@@ -279,7 +279,7 @@
         </div>
         <div class="randomization-container">
             <div class="team-members-container">
-                <h1>Team 2 Members</h1>
+                <h1 class="game-header"></h1>
                 <div class="team-members">
                 </div>
             </div>
@@ -293,50 +293,29 @@
 </body>
     <script>
         //change these parameters only
-        const groupNumber = 2
-        const maxMembersPerGroup = 3
+        const groupNumber = 4
+        const maxMembersPerGroup = 4
         const moveByNumberOfPixels = 3
+        const numberOfGroups = 3
 
         //"created with the voices from LOVO @ www.lovo.ai.”
         
         //Uncomment your group here and comment out active array
         //Group 1
-        //let classMembers = ['Adia Boyd','Alexander Woolley','Beauregard Hengst','Caroline Tobin','Caroline Lynch', 'Charles Puente-matos', 'David Ready', 'Dominique Christopher', 'Donnahue George', 'Eric Freyer', 'Esiena Ekwofia', 'Evan Chu', 'Fiach Mchugh hill']
+        //let classMembers = ['Adia Boyd','Alexander Woolley','Beauregard Hengst','Caroline Tobin','Caroline Lynch', 'Charles Puente-matos', 'David Ready', 'Dominique Christopher', 'Donnahue George', 'Eric Freyer', 'Esiena Ekwofia', 'Evan Chu', 'Fiach Mchugh Hill']
         
         //Group 2
-        let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
+        //let classMembers = ['Gabriel Sanchez','Genis Bardales','Gillian Fitzgerald','Gregory Scott','Illgner Paul','Jacqueline Rodney','Jason Pena','Joel Straley','Jonathan Gomez','Jude Sanchez','Kofi Hayford','Kristina Iankovskaia']
         
         //Group 3
         //let classMembers = ['Laura Aupert','Lindsey Bowen','Luwenxi Song','Margaret Elson','Mariah Rivera','Mateo Molina','Matthew Vanni','Melissa Kinsey','Natalia Carvajal','Nicholas Jazgunovich','Peter Cardillo','Purna Gurung','Rajahni Fields']
         
         //Group 4
-        //let classMembers = ['Ramon Torres','Samya Fiki','Shantel Modeste','Thokozile Soko','Thomas Rumore','Veronika Balakhovsky','Vincent Hart','Viviana Arenas','Wendy Figueroa','Jack Reed','William Cannon']
+        let classMembers = ['Ramon Torres','Samya Fiki','Shantel Modeste','Thokozile Soko','Thomas Rumore','Veronika Balakhovsky','Vincent Hart','Viviana Arenas','Wendy Figueroa','Jack Reed','William Cannon']
 
         $(document).ready(function(){
             if(localStorage.getItem('team1')){
-                let column;
-                $('.team-header').text(`Group ${groupNumber} Teams`)
-                $('.saved-teams').css('display', 'block')
-                $('.welcome').css('width', '100%')
-                const keys = []
-                Object.keys(localStorage).forEach(key => {
-                    if(key.includes('team')){
-                        keys.push(key)
-                    }
-                })
-                keys.forEach((key, index) => {
-                    column = $(`<div class="team team${index+1}">
-                        <h1 class="group-header" style="text-decoration: capitalize">${key.slice(0,-1)} ${key.slice(-1)}</h1>
-                    </div>
-                    `)
-                    localStorage.getItem(`${key.slice(0,-1)}${index + 1}`).split(',').forEach(member => {
-                        if(member != ""){      
-                            const memberP = $(`<p class="member">${member}</p>`)
-                            column.append(memberP)
-                        }
-                    })
-                    $('.team-groups-homepage').append(column)
-                })
+                displayTeams()
             }else{
                 $('.welcome-message').css('display', 'block')
                 confetti()
@@ -383,6 +362,32 @@
                 }
             }, 62.5)
             highlightCount++
+        }
+
+        const displayTeams = () => {
+            let column;
+            $('.team-header').text(`Group ${groupNumber} Teams`)
+            $('.saved-teams').css('display', 'block')
+            $('.welcome').css('width', '100%')
+            const keys = []
+            Object.keys(localStorage).forEach(key => {
+                if(key.includes('team')){
+                    keys.push(key)
+                }
+            })
+            keys.forEach((key, index) => {
+                column = $(`<div class="team team${index+1}">
+                    <h1 class="group-header" style="text-transform: capitalize">${key.slice(0,-1)} ${key.slice(-1)}</h1>
+                </div>
+                `)
+                localStorage.getItem(`${key.slice(0,-1)}${index + 1}`).split(',').forEach(member => {
+                    if(member != ""){      
+                        const memberP = $(`<p class="member">${member}</p>`)
+                        column.append(memberP)
+                    }
+                })
+                $('.team-groups-homepage').append(column)
+            })
         }
 
         const handlePositioning = (currentPosition, endPosition, randomMember, clonedMember) => {
@@ -435,6 +440,9 @@
             clonedMember.innerText = randomMember.innerText
             clonedMember.style.marginBottom = '10px'
             randomMember.remove()
+            if(document.querySelectorAll('.team-members .member').length <= 0){
+                endGame()
+            }
         }
 
         const hideClone = (clonedMember, width) => {
@@ -450,8 +458,7 @@
 
         const selectMember = (randomIndex) => {
             randomMember = $('.team-members .member')[randomIndex]
-            console.log(randomMember)
-            randomMemberAudio = new Audio(`./Sounds/Group_2_names/${randomMember.innerText.split(' ').join('_')}.wav`)
+            randomMemberAudio = new Audio(`./Sounds/Group_${groupNumber}_names/${randomMember.innerText.split(' ').join('_')}.wav`)
             randomMemberAudio.play()
             randomMember.style.backgroundColor = 'white'
             randomMember.style.color = 'black'
@@ -492,14 +499,18 @@
                 }
             }
             if(nonCompleteTeams.length <= 0){
-                randomMemberAudio.onended = function(){
-                    let outroAudio = new Audio(`./Sounds/Congratulations/congratulations_team${groupNumber}.wav`)
-                    outroAudio.play()
-                    outroAudio.onended = function(){
-                        $('.start-randomization').css('display', 'none')
-                        $('.save').css('display', 'block')
-                        document.querySelector('.save').addEventListener('click', handleSavingGroupData)
-                    }
+                endGame()
+            }
+        }
+
+        const endGame = () => {
+            randomMemberAudio.onended = function(){
+                let outroAudio = new Audio(`./Sounds/Congratulations/congratulations_team${groupNumber}.wav`)
+                outroAudio.play()
+                outroAudio.onended = function(){
+                    $('.start-randomization').css('display', 'none')
+                    $('.save').css('display', 'block')
+                    document.querySelector('.save').addEventListener('click', handleSavingGroupData)
                 }
             }
         }
@@ -512,6 +523,10 @@
                 })
                 localStorage.setItem(`team${index+1}`, teamString)
             })
+            $('.randomization-container').css('display', 'none')
+            $('.team-groups').css('display', 'none')
+            $('.team-header').css('display', 'block')
+            displayTeams()
         }
 
         const handleRandomButtonClick = () => {
@@ -536,7 +551,7 @@
         const runRandomization = () => {
             let i = 0;
             let nameInterval = setInterval(function(){
-                let classMember = new Audio(`./Sounds/Group_2_names/${classMembers[i].split(' ').join('_')}.wav`)
+                let classMember = new Audio(`./Sounds/Group_${groupNumber}_names/${classMembers[i].split(' ').join('_')}.wav`)
                 let newP = $(`<p class="member">${classMembers[i]}</p>`)
                 if(i ===  classMembers.length - 1){
                     clearInterval(nameInterval)
@@ -554,6 +569,7 @@
 
         const startGame = () => {
             $('.start').on('click', function(){
+                $('.game-header').text(`Team ${groupNumber} Members`)
                 $('#world').css('display', 'block')
                 const intro = new Audio('./Sounds/intro.wav');
                 intro.play()
@@ -561,7 +577,7 @@
                     crowdClapping.play()
                     $('.welcome h1 , .welcome .start').css('display', 'none')
                     let teamNumber = 1;
-                    for (let i=0; i < classMembers.length; i += maxMembersPerGroup) {
+                    for (let i=0; i < numberOfGroups; i++) {
                         const column = $(`<div class="team team${teamNumber}">
                             <h1 class="group-header" style="margin-bottom: 10px;">Team ${teamNumber}</h1>
                         </div>`)
