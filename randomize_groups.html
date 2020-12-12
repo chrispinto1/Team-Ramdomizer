@@ -436,6 +436,13 @@
 
         const handleSavingGroupData = () => {
             debugger
+            document.querySelectorAll('.team').forEach((group, index) => {
+                let teamString = ""
+                group.querySelectorAll('p').forEach(div => {
+                    teamString += div.innerText += ','
+                })
+                localStorage.setItem(`team${index+1}`, teamString)
+            })
         }
 
         const handleRandomButtonClick = () => {
